@@ -1,6 +1,9 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import { TranslateProvider } from './translations'
+import "node_modules/flag-icons/css/flag-icons.min.css"
+
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -14,7 +17,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  return (
+  return <>
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
@@ -40,12 +43,12 @@ export default function RootLayout({
           ========================================================
         */}
       </head>
-      <body className={inter.className}>{children}</body>
 
-      {/* 
-        <div id="preloader"></div>
-        <a href="#" className="back-to-top d-flex align-items-center justify-content-center"><i className="bi bi-arrow-up-short"></i></a> 
-      */}
+      <body className={inter.className}>
+        <TranslateProvider>
+          {children}
+        </TranslateProvider>
+      </body>
 
       {/* Footer scripts */}
       <script async src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
@@ -55,5 +58,5 @@ export default function RootLayout({
       <script async src="assets/vendor/typed.js/typed.umd.js"></script>
       <script async src="assets/vendor/php-email-form/validate.js"></script> 
     </html>
-  )
+  </>
 }

@@ -1,10 +1,14 @@
 'use client'
 
-import { LegacyRef, MutableRefObject, Ref, useEffect, useRef } from "react"
-
+import { Ref, useEffect, useRef } from "react"
+import { useLanguage } from "./translations"
+import T from "./translations/page"
+import Typed from "typed.js"
+import { RaimbowColorBar } from "../components/RaimbowProgressBar"
 
 export default function Home() {
   const preloaderRef: Ref<HTMLDivElement | undefined> = useRef()
+  const {language, setLanguage, t} = useLanguage()
   
   useEffect(() => {
     //@ts-ignore as main() binds events and starts all client-side template logic
@@ -12,6 +16,25 @@ export default function Home() {
     if (preloaderRef.current)
       preloaderRef.current.style.display = "none";
   }, [])
+  useEffect(() => {
+    const typed = new Typed('#typed', {
+      strings: t(T.typed),
+      typeSpeed: 50,
+      backSpeed: 11,
+      backDelay: 3000,
+      loop: true,
+    });
+
+    return () => {
+      typed.destroy()
+    }
+  }, [language])
+
+  const progressBarLabelStyle = {
+    textShadow: 
+      "-3px -3px 3px black, -3px 3px 3px black, 3px 3px 3px black, 3px -3px 3px black"
+    ,
+  }
   
   return <>
     {/* @ts-ignore */}
@@ -20,38 +43,35 @@ export default function Home() {
 
     <header id="header" className="fixed-top">
       <div className="container d-flex align-items-center justify-content-between">
+        <h1 className="logo"><a href="index.html">DevFolio</a></h1>
+        {/* 
+          Uncomment below if you prefer to use an image logo
+          <a href="index.html" className="logo">
+            <img src="assets/img/logo.png" alt="" className="img-fluid" />
+          </a>
+        */}
 
-      <h1 className="logo"><a href="index.html">DevFolio</a></h1>
-      {/* 
-        Uncomment below if you prefer to use an image logo
-        <!-- <a href="index.html" className="logo"><img src="assets/img/logo.png" alt="" className="img-fluid"></a>--> 
-      */}
-
+        {/* TODO Create a t() functhin within a language hook */}
         <nav id="navbar" className="navbar">
           <ul>
-            <li><a className="nav-link scrollto active" href="#hero">Home</a></li>
-            <li><a className="nav-link scrollto" href="#about">About</a></li>
-            <li><a className="nav-link scrollto" href="#services">Services</a></li>
-            <li><a className="nav-link scrollto " href="#work">Work</a></li>
-            <li><a className="nav-link scrollto " href="#blog">Blog</a></li>
-            <li className="dropdown"><a href="#"><span>Drop Down</span> <i className="bi bi-chevron-down"></i></a>
+            <li><a className="nav-link scrollto active" href="#about">{t(T.aboutMe)}</a></li>
+            <li><a className="nav-link scrollto" href="#services">{t(T.services)}</a></li>
+            <li><a className="nav-link scrollto" href="#work">{t(T.work)}</a></li>
+            <li><a className="nav-link scrollto" href="#blog">{t(T.blog)}</a></li>
+            <li><a className="nav-link scrollto" href="#contact">{t(T.contact)}</a></li>
+            <li className="dropdown">
+              <a href="#">
+                <i className="bi bi-translate" aria-hidden="true"></i>
+              </a>
               <ul>
-                <li><a href="#">Drop Down 1</a></li>
-                <li className="dropdown"><a href="#"><span>Deep Drop Down</span> <i className="bi bi-chevron-right"></i></a>
-                  <ul>
-                    <li><a href="#">Deep Drop Down 1</a></li>
-                    <li><a href="#">Deep Drop Down 2</a></li>
-                    <li><a href="#">Deep Drop Down 3</a></li>
-                    <li><a href="#">Deep Drop Down 4</a></li>
-                    <li><a href="#">Deep Drop Down 5</a></li>
-                  </ul>
-                </li>
-                <li><a href="#">Drop Down 2</a></li>
-                <li><a href="#">Drop Down 3</a></li>
-                <li><a href="#">Drop Down 4</a></li>
+                <li><a href="#/" onClick={() => setLanguage("es")}>
+                  <span className="fi fi-es"></span>Español
+                </a></li>
+                <li><a href="#/" onClick={() => setLanguage("en")}>
+                  <span className="fi fi-us"></span>English
+                </a></li>
               </ul>
-            </li>
-            <li><a className="nav-link scrollto" href="#contact">Contact</a></li>
+            </li> 
           </ul>
           <i className="bi bi-list mobile-nav-toggle"></i>
         </nav>
@@ -65,12 +85,14 @@ export default function Home() {
       <div className="hero-content display-table">
         <div className="table-cell">
           <div className="container">
-            {/* <!--<p className="display-6 color-d">Hello, world!</p>--> */}
-            <h1 className="hero-title mb-4">I am Morgan Freeman</h1>
-            <p className="hero-subtitle"><span className="typed" data-typed-items="Designer, Developer, Freelancer, Photographer"></span></p>
-            {/* 
-              <p className="pt-3"><a className="btn btn-primary btn js-scroll px-4" href="#about" role="button">Learn More</a></p> --> 
-            */}
+            {/* <p className="display-6 color-d">Hello, world!</p> */}
+            <h1 className="hero-title mb-4">{t(T.iAm)}</h1>
+            <p className="hero-subtitle"><span id="typed" /></p>
+            <p className="pt-3">
+              <a className="btn btn-primary btn js-scroll px-4" href="#about" role="button">
+                {t(T.learnMore)}
+              </a>
+            </p>
           </div>
         </div>
       </div>
@@ -78,7 +100,6 @@ export default function Home() {
     {/* <!-- End Hero Section --> */}
 
     <main id="main">
-
       {/* <!-- ======= About Section ======= --> */}
       <section id="about" className="about-mf sect-pt4 route">
         <div className="container">
@@ -91,61 +112,65 @@ export default function Home() {
                       <div className="col-sm-6 col-md-5">
                         <div className="about-img">
                           {/* TODO Import */}
-                          <img src="assets/img/testimonial-2.jpg" className="img-fluid rounded b-shadow-a" alt="" />
+                          <img alt="" className="img-fluid rounded b-shadow-a" 
+                            src="assets/img/testimonial-2.jpg" 
+                          />
                         </div>
                       </div>
                       <div className="col-sm-6 col-md-7">
                         <div className="about-info">
-                          <p><span className="title-s">Name: </span> <span>Morgan Freeman</span></p>
-                          <p><span className="title-s">Profile: </span> <span>full stack developer</span></p>
-                          <p><span className="title-s">Email: </span> <span>contact@example.com</span></p>
-                          <p><span className="title-s">Phone: </span> <span>(617) 557-0089</span></p>
+                          <p>
+                            <span className="title-s">{t(T.name)}: </span>
+                            <span>Walter Celi</span>
+                          </p>
+                          <p>
+                            <span className="title-s">{t(T.profile)}: </span>
+                            <span>{t(T.profileDescription)}</span>
+                          </p>
+                          <p>
+                            <span className="title-s">{t(T.email)}: </span>
+                            <span>contact@example.com</span>
+                          </p>
+                          <p>
+                            <span className="title-s">{t(T.phone)}: </span>
+                            <span>+593 99 415 2636</span>
+                          </p>
                         </div>
                       </div>
                     </div>
                     <div className="skill-mf">
-                      <p className="title-s">Skill</p>
-                      <span>HTML</span> <span className="pull-right">85%</span>
-                      <div className="progress">
-                        <div className="progress-bar" role="progressbar" style={{width: "85%"}} aria-valuenow={85}></div>
-                      </div>
-                      <span>CSS3</span> <span className="pull-right">75%</span>
-                      <div className="progress">
-                        <div className="progress-bar" role="progressbar" style={{width: "75%"}} aria-valuenow={75}></div>
-                      </div>
-                      <span>PHP</span> <span className="pull-right">50%</span>
-                      <div className="progress">
-                        <div className="progress-bar" role="progressbar" style={{width: "50%"}} aria-valuenow={50}></div>
-                      </div>
-                      <span>JAVASCRIPT</span> <span className="pull-right">90%</span>
-                      <div className="progress">
-                        <div className="progress-bar" role="progressbar" style={{width: "90%"}} aria-valuenow={90}></div>
-                      </div>
+                      <p className="title-s">{t(T.skills)}</p>
+                      <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={70} 
+                        customLabel={"React"} className="py-2"
+                      />
+                      <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={50} 
+                        customLabel={"React Native"} className="py-2"
+                      />
+                      <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={40} 
+                        customLabel={"PHP & Apache"} className="py-2"
+                      />
+                      <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={80} 
+                        customLabel={"Node & Express"} className="py-2"
+                      />
+                      <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={90} 
+                        customLabel={"Linux"} className="py-2"
+                      />
+                      <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={66} 
+                        customLabel={"Docker"} className="py-2"
+                      />
+                      <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={75} 
+                        customLabel={"MariaDB & SQL Server"} className="py-2"
+                      />
                     </div>
                   </div>
-                  <div className="col-md-6">
+                  <div className="col-md-6">  
                     <div className="about-me pt-4 pt-md-0">
                       <div className="title-box-2">
                         <h5 className="title-left">
-                          About me
+                          {t(T.aboutMe)}
                         </h5>
                       </div>
-                      <p className="lead">
-                        Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. Curabitur arcu erat, accumsan id
-                        imperdiet et, porttitor
-                        at sem. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi. Nulla
-                        porttitor accumsan tincidunt.
-                      </p>
-                      <p className="lead">
-                        Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Vivamus suscipit tortor eget felis
-                        porttitor volutpat. Vestibulum
-                        ac diam sit amet quam vehicula elementum sed sit amet dui. porttitor at sem.
-                      </p>
-                      <p className="lead">
-                        Nulla porttitor accumsan tincidunt. Quisque velit nisi, pretium ut lacinia in, elementum id enim.
-                        Nulla porttitor accumsan
-                        tincidunt. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a.
-                      </p>
+                      {t(T.aboutParagraps).map(p => <p className="lead">{p}</p>)}
                     </div>
                   </div>
                 </div>
