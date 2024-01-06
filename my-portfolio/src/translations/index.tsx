@@ -3,11 +3,11 @@ import React, { ReactNode, useState, createContext, useContext, Context } from "
 
 type LanguageContextProps = {
   language: string | null;
-  useLanguage: (lenguage: string) => undefined;
+  setLanguage: (lenguage: string) => undefined;
 };
 export const TranslateContext = createContext<LanguageContextProps>({
   language: null,
-  useLanguage: (lenguage: string) => undefined,
+  setLanguage: (lenguage: string) => undefined,
 })
 export const TranslateProvider = 
   (props: {children: ReactNode}) => {
@@ -21,7 +21,7 @@ export const TranslateProvider =
 export const useLanguage = () => {
   const {language, setLanguage} = useContext(TranslateContext)
 
-  const t = (key): string | React.JSX.Element => key[language]
+  const t = (key): string | string[] | React.JSX.Element | React.JSX.Element[] => key[language]
   /*
   TODO Create a dynamic dict which picks everythong of the language
     const tr = {

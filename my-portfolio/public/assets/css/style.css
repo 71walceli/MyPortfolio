@@ -372,6 +372,7 @@ a:hover {
   z-index: 9999;
   overflow: hidden;
   background: #fff;
+  /* transform: visibility 0s, opacity 0.5s linear, */
 }
 
 #preloader:before {

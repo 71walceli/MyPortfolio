@@ -1,22 +1,204 @@
 'use client'
 
-import { Ref, useEffect, useRef } from "react"
-import { useLanguage } from "./translations"
-import T from "./translations/page"
-import Typed from "typed.js"
+import { Ref, useEffect, useRef, useState } from "react"
+
+import Typed from "typed.js"  // For aototyping string
+import PoreCounter from "@srexi/purecounterjs"
+import GLightbox from "glightbox"
+import Swiper from "swiper"
+import $ from "jquery"
+
+import { useLanguage } from "../translations"
 import { RaimbowColorBar } from "../components/RaimbowProgressBar"
 
+import T from "../translations/page"
+import { on, onscroll, scrollto, select } from "@/functions"
+import { DotLoader } from "react-spinners"
+import { articles } from "@/articles"
+
 export default function Home() {
-  const preloaderRef: Ref<HTMLDivElement | undefined> = useRef()
   const {language, setLanguage, t} = useLanguage()
+  const [loaded, setLoaded] = useState(false);
   
   useEffect(() => {
+    if (loaded) return;
     //@ts-ignore as main() binds events and starts all client-side template logic
-    window.main()
-    if (preloaderRef.current)
-      preloaderRef.current.style.display = "none";
-  }, [])
+    window.Main?.()
+    setTimeout(() => {
+      setLoaded(true)
+    }, 166)
+  }, [loaded])
   useEffect(() => {
+    if (!loaded) return;
+    new PoreCounter();
+  }, [loaded])
+  useEffect(() => {
+    if (!loaded) return;
+    new Swiper('.testimonials-slider', {
+      speed: 600,
+      loop: true,
+      autoplay: {
+        delay: 5000,
+        disableOnInteraction: false
+      },
+      slidesPerView: 'auto',
+      pagination: {
+        el: '.swiper-pagination',
+        type: 'bullets',
+        clickable: true
+      }
+    });
+    new Swiper('.portfolio-details-slider', {
+      speed: 400,
+      loop: true,
+      autoplay: {
+        delay: 5000,
+        disableOnInteraction: false
+      },
+      pagination: {
+        el: '.swiper-pagination',
+        type: 'bullets',
+        clickable: true
+      }
+    });
+  }, [loaded])
+  useEffect(() => {
+    if (!loaded) return;
+    const portfolioLightbox = GLightbox({
+      selector: '.portfolio-lightbox'
+    });
+  }, [loaded])
+  
+  // Rest of main.js code
+  useEffect(() => {
+    if (!loaded) return;
+    // Navbar links active state on scroll
+    let navbarlinks = select('#navbar .scrollto', true)
+    const navbarlinksActive = () => {
+      let position = window.scrollY + 200
+      navbarlinks.forEach(navbarlink => {
+        if (!navbarlink.hash) return
+        let section = select(navbarlink.hash)
+        if (!section) return
+        if (position >= section.offsetTop 
+          && position <= (section.offsetTop + section.offsetHeight)
+        ) {
+          navbarlink.classList.add('active')
+        } else {
+          navbarlink.classList.remove('active')
+        }
+      })
+    }
+    const navbarlinksActive_load = window.addEventListener('load', navbarlinksActive)
+    const navbarlinksActive_onscroll = onscroll(document, navbarlinksActive)
+
+    /**
+     * Toggle .header-scrolled class to #header when page is scrolled
+     */
+    let selectHeader = select('#header')
+    let headerScrolled_load, headerScrolled_onscroll
+    if (selectHeader) {
+      const headerScrolled = () => {
+        if (window.scrollY > 100) {
+          selectHeader.classList.add('header-scrolled')
+        } else {
+          selectHeader.classList.remove('header-scrolled')
+        }
+      }
+      headerScrolled_load = window.addEventListener('load', headerScrolled)
+      headerScrolled_onscroll = onscroll(document, headerScrolled)
+    }
+
+    /**
+     * Back to top button
+     */
+    let backtotop = select('.back-to-top')
+    let toggleBacktotop_load, toggleBacktotop_onscroll
+    if (backtotop) {
+      const toggleBacktotop = () => {
+        if (window.scrollY > 100) {
+          backtotop.classList.add('active')
+        } else {
+          backtotop.classList.remove('active')
+        }
+      }
+      toggleBacktotop_load = window.addEventListener('load', toggleBacktotop)
+      toggleBacktotop_onscroll = onscroll(document, toggleBacktotop)
+    }
+
+    /**
+     * Mobile nav toggle
+     */
+    const mobileNavToggles_click =  on('click', '.mobile-nav-toggle', function(e) {
+      select('#navbar').classList.toggle('navbar-mobile')
+      this.classList.toggle('bi-list')
+      this.classList.toggle('bi-x')
+    })
+
+    /**
+     * Mobile nav dropdowns activate
+     */
+    const navbarDropdown_click = on('click', '.navbar .dropdown > a', function(e) {
+      if (select('#navbar').classList.contains('navbar-mobile')) {
+        e.preventDefault()
+        this.nextElementSibling.classList.toggle('dropdown-active')
+      }
+    }, true)
+
+    /**
+     * Scrool with ofset on links with a class name .scrollto
+     */
+    const scrollTo_click = on('click', '.scrollto', function(e) {
+      if (select(this.hash)) {
+        e.preventDefault()
+
+        let navbar = select('#navbar')
+        if (navbar.classList.contains('navbar-mobile')) {
+          navbar.classList.remove('navbar-mobile')
+          let navbarToggle = select('.mobile-nav-toggle')
+          navbarToggle.classList.toggle('bi-list')
+          navbarToggle.classList.toggle('bi-x')
+        }
+        scrollto(this.hash)
+      }
+    }, true)
+
+    /**
+     * Scroll with offset on page load with hash links in the url
+     * TODO Possibly move it to its own effect
+     */
+    window.addEventListener('load', () => {
+      if (window.location.hash) {
+        if (select(window.location.hash)) {
+          scrollto(window.location.hash)
+        }
+      }
+    });
+
+    return () => {
+      window.removeEventListener("load", navbarlinksActive_load)
+      window.removeEventListener("onscroll", navbarlinksActive_onscroll)
+      window.removeEventListener("load", headerScrolled_load)
+      window.removeEventListener("onscroll", headerScrolled_onscroll)
+      window.removeEventListener("load", toggleBacktotop_load)
+      window.removeEventListener("onscroll", toggleBacktotop_onscroll)
+      
+      // TODO WIP
+      $(".mobile-app-toggle").each((_, e) => 
+        mobileNavToggles_click.map(i => e.removeEventListener("click", i))
+      )
+      $(".navbar .dropdown > a").each((_, e) => 
+        navbarDropdown_click.map(i => e.removeEventListener("click", i))
+      )
+      $(".scrollTo").each((_, e) => 
+        scrollTo_click.map(i => e.removeEventListener("click", i))
+      )
+    }
+  }, [loaded, language])  // TODO Remove language, which was put in order to test this.
+  
+  // Language state events
+  useEffect(() => {
+    if (!loaded) return;
     const typed = new Typed('#typed', {
       strings: t(T.typed),
       typeSpeed: 50,
@@ -28,7 +210,7 @@ export default function Home() {
     return () => {
       typed.destroy()
     }
-  }, [language])
+  }, [language, loaded])
 
   const progressBarLabelStyle = {
     textShadow: 
@@ -36,11 +218,27 @@ export default function Home() {
     ,
   }
   
+  const pureCounterEndSeconds = 2.25
+  
+  const preloaderStyle = {
+    opacity: loaded ? 0 : 1,
+    visibility: loaded ? "hidden" : "visible",
+    transition: "all 0.333s linear",
+    alignItems: "center",
+    display: "flex",
+    justifyContent: "center",
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: "100%",
+    height: "100%",
+    zIndex: 9999,
+    overflow: "hidden",
+    background: "white",
+  }
   return <>
-    {/* @ts-ignore */}
-    <div id="preloader" ref={preloaderRef}></div>
-    <a href="#" className="back-to-top d-flex align-items-center justify-content-center"><i className="bi bi-arrow-up-short"></i></a> 
-
     <header id="header" className="fixed-top">
       <div className="container d-flex align-items-center justify-content-between">
         <h1 className="logo"><a href="index.html">DevFolio</a></h1>
@@ -100,6 +298,7 @@ export default function Home() {
     {/* <!-- End Hero Section --> */}
 
     <main id="main">
+
       {/* <!-- ======= About Section ======= --> */}
       <section id="about" className="about-mf sect-pt4 route">
         <div className="container">
@@ -111,9 +310,9 @@ export default function Home() {
                     <div className="row">
                       <div className="col-sm-6 col-md-5">
                         <div className="about-img">
-                          {/* TODO Import */}
+                          {/* TODO Import all images */}
                           <img alt="" className="img-fluid rounded b-shadow-a" 
-                            src="assets/img/testimonial-2.jpg" 
+                            src="assets/img/myFace.jpg" 
                           />
                         </div>
                       </div>
@@ -141,25 +340,37 @@ export default function Home() {
                     <div className="skill-mf">
                       <p className="title-s">{t(T.skills)}</p>
                       <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={70} 
-                        customLabel={"React"} className="py-2"
+                        className="py-2" customLabel="React"
                       />
                       <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={50} 
-                        customLabel={"React Native"} className="py-2"
+                        className="py-2" customLabel="React Native"
                       />
                       <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={40} 
-                        customLabel={"PHP & Apache"} className="py-2"
+                        className="py-2" customLabel="PHP & Apache"
                       />
                       <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={80} 
-                        customLabel={"Node & Express"} className="py-2"
+                        className="py-2" customLabel="Node & Express"
                       />
                       <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={90} 
-                        customLabel={"Linux"} className="py-2"
+                        className="py-2" customLabel="Linux"
                       />
                       <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={66} 
-                        customLabel={"Docker"} className="py-2"
+                        className="py-2" customLabel="Docker"
                       />
                       <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={75} 
-                        customLabel={"MariaDB & SQL Server"} className="py-2"
+                        className="py-2" customLabel="MariaDB & SQL Server"
+                      />
+                      <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={55} 
+                        className="py-2" customLabel="Jupyter"
+                      />
+                      <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={70} 
+                        className="py-2" customLabel="Cloud"
+                      />
+                      <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={40} 
+                        className="py-2" customLabel="Data Analytics"
+                      />
+                      <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={35}
+                        className="py-2" customLabel="Machine Learning"
                       />
                     </div>
                   </div>
@@ -170,7 +381,7 @@ export default function Home() {
                           {t(T.aboutMe)}
                         </h5>
                       </div>
-                      {t(T.aboutParagraps).map(p => <p className="lead">{p}</p>)}
+                      {t(T.aboutParagraps).map((p, i) => <p className="lead" key={i}>{p}</p>)}
                     </div>
                   </div>
                 </div>
@@ -187,159 +398,107 @@ export default function Home() {
             <div className="col-sm-12">
               <div className="title-box text-center">
                 <h3 className="title-a">
-                  Services
+                  {t(T.services)}
                 </h3>
-                <p className="subtitle-a">
+                {/* <p className="subtitle-a">
                   Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                </p>
+                </p> */}
                 <div className="line-mf"></div>
               </div>
             </div>
           </div>
           <div className="row">
-            <div className="col-md-4">
-              <div className="service-box">
-                <div className="service-ico">
-                  <span className="ico-circle"><i className="bi bi-briefcase"></i></span>
-                </div>
-                <div className="service-content">
-                  <h2 className="s-title">Web Design</h2>
-                  <p className="s-description text-center">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni adipisci eaque autem fugiat! Quia,
-                    provident vitae! Magni
-                    tempora perferendis eum non provident.
-                  </p>
+            {t(T.servicesDescriptions).map(service => 
+              <div className="col-md-4" key={service.title}>
+                <div className="service-box">
+                  <div className="service-ico">
+                    <span className="ico-circle"><i className={service.icon}></i></span>
+                  </div>
+                  <div className="service-content">
+                    <h2 className="s-title">{service.title}</h2>
+                    <p className="s-description text-center">{service.description}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="col-md-4">
-              <div className="service-box">
-                <div className="service-ico">
-                  <span className="ico-circle"><i className="bi bi-card-checklist"></i></span>
-                </div>
-                <div className="service-content">
-                  <h2 className="s-title">Web Development</h2>
-                  <p className="s-description text-center">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni adipisci eaque autem fugiat! Quia,
-                    provident vitae! Magni
-                    tempora perferendis eum non provident.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="service-box">
-                <div className="service-ico">
-                  <span className="ico-circle"><i className="bi bi-bar-chart"></i></span>
-                </div>
-                <div className="service-content">
-                  <h2 className="s-title">Photography</h2>
-                  <p className="s-description text-center">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni adipisci eaque autem fugiat! Quia,
-                    provident vitae! Magni
-                    tempora perferendis eum non provident.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="service-box">
-                <div className="service-ico">
-                  <span className="ico-circle"><i className="bi bi-binoculars"></i></span>
-                </div>
-                <div className="service-content">
-                  <h2 className="s-title">Responsive Design</h2>
-                  <p className="s-description text-center">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni adipisci eaque autem fugiat! Quia,
-                    provident vitae! Magni
-                    tempora perferendis eum non provident.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="service-box">
-                <div className="service-ico">
-                  <span className="ico-circle"><i className="bi bi-brightness-high"></i></span>
-                </div>
-                <div className="service-content">
-                  <h2 className="s-title">Graphic Design</h2>
-                  <p className="s-description text-center">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni adipisci eaque autem fugiat! Quia,
-                    provident vitae! Magni
-                    tempora perferendis eum non provident.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="service-box">
-                <div className="service-ico">
-                  <span className="ico-circle"><i className="bi bi-calendar4-week"></i></span>
-                </div>
-                <div className="service-content">
-                  <h2 className="s-title">Marketing Services</h2>
-                  <p className="s-description text-center">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni adipisci eaque autem fugiat! Quia,
-                    provident vitae! Magni
-                    tempora perferendis eum non provident.
-                  </p>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </section>{/* <!-- End Services Section --> */}
 
       {/* <!-- ======= Counter Section ======= --> */}
-      <div className="section-counter paralax-mf bg-image" style={{backgroundImage: "url(assets/img/counters-bg.jpg)"}}>
-        <div className="overlay-mf"></div>
+      <div className="section-counter paralax-mf bg-image" style={
+        {backgroundImage: "url(assets/img/counters-bg.jpg)"}
+      }>
+        <div className="overlay-mf" style={{
+          backgroundColor: "green"
+        }} />
         <div className="container position-relative">
           <div className="row">
-            <div className="col-sm-3 col-lg-3">
+            <div className="col-sm-4 col-lg-4">
               <div className="counter-box counter-box pt-4 pt-md-0">
                 <div className="counter-ico">
                   <span className="ico-circle"><i className="bi bi-check"></i></span>
                 </div>
                 <div className="counter-num">
-                  <p data-purecounter-start="0" data-purecounter-end="450" data-purecounter-duration="1" className="counter purecounter"></p>
-                  <span className="counter-text">WORKS COMPLETED</span>
+                  <p className="counter">
+                    <span className="purecounter" data-purecounter-start="0" data-purecounter-end="20" 
+                      data-purecounter-duration={pureCounterEndSeconds} 
+                    />
+                    +
+                  </p>
+                  <span className="counter-text">{t(T.numbers.projectsDone)}</span>
                 </div>
               </div>
             </div>
-            <div className="col-sm-3 col-lg-3">
+            <div className="col-sm-4 col-lg-4">
               <div className="counter-box pt-4 pt-md-0">
                 <div className="counter-ico">
                   <span className="ico-circle"><i className="bi bi-journal-richtext"></i></span>
                 </div>
+                {/* TODO Debe decir:
+                  N años
+                  Experiencia
+                */}
                 <div className="counter-num">
-                  <p data-purecounter-start="0" data-purecounter-end="25" data-purecounter-duration="1" className="counter purecounter"></p>
-                  <span className="counter-text">YEARS OF EXPERIENCE</span>
+                  <p className="counter">
+                    <span 
+                      className="purecounter" data-purecounter-start="0" data-purecounter-end="2" 
+                      data-purecounter-duration={pureCounterEndSeconds} 
+                    />
+                    +
+                  </p>
+                  <span className="counter-text">{t(T.numbers.yearsOfExperience)}</span>
                 </div>
               </div>
             </div>
-            <div className="col-sm-3 col-lg-3">
+            <div className="col-sm-4 col-lg-4">
               <div className="counter-box pt-4 pt-md-0">
                 <div className="counter-ico">
                   <span className="ico-circle"><i className="bi bi-people"></i></span>
                 </div>
                 <div className="counter-num">
-                  <p data-purecounter-start="0" data-purecounter-end="550" data-purecounter-duration="1" className="counter purecounter"></p>
-                  <span className="counter-text">TOTAL CLIENTS</span>
+                <p className="counter">
+                    <span 
+                      className="purecounter" data-purecounter-start="0" data-purecounter-end="7" 
+                      data-purecounter-duration={pureCounterEndSeconds} 
+                    />
+                    +
+                  </p>
+                  <span className="counter-text">{t(T.numbers.totalClients)}</span>
                 </div>
               </div>
             </div>
-            <div className="col-sm-3 col-lg-3">
+            {/* <div className="col-sm-3 col-lg-3">
               <div className="counter-box pt-4 pt-md-0">
                 <div className="counter-ico">
                   <span className="ico-circle"><i className="bi bi-award"></i></span>
                 </div>
                 <div className="counter-num">
                   <p data-purecounter-start="0" data-purecounter-end="48" data-purecounter-duration="1" className="counter purecounter"></p>
-                  <span className="counter-text">AWARD WON</span>
+                  <span className="counter-text">{t(T.numbers.awardsWon)}</span>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>{/* <!-- End Counter Section --> */}
@@ -350,168 +509,52 @@ export default function Home() {
           <div className="row">
             <div className="col-sm-12">
               <div className="title-box text-center">
-                <h3 className="title-a">
-                  Portfolio
-                </h3>
+                <h3 className="title-a">{ t(T.portfolio) }</h3>
                 <p className="subtitle-a">
-                  Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+                  {t(T.portfolioDescription)}
                 </p>
                 <div className="line-mf"></div>
               </div>
             </div>
           </div>
           <div className="row">
-            <div className="col-md-4">
+            {/* TODO Add actual articles */}
+            {articles.map(a => <div className="col-md-4" key={a.href}>
               <div className="work-box">
-                <a href="assets/img/work-1.jpg" data-gallery="portfolioGallery" className="portfolio-lightbox">
+                <a href={a.href} data-gallery="portfolioGallery" className="portfolio-lightbox">
                   <div className="work-img">
-                    <img src="assets/img/work-1.jpg" alt="" className="img-fluid" />
+                    <img src={a.mainPicSrc} alt="" className="img-fluid" />
                   </div>
                 </a>
                 <div className="work-content">
                   <div className="row">
                     <div className="col-sm-8">
-                      <h2 className="w-title">Lorem impsum dolor</h2>
+                      <h2 className="w-title">{a.title}</h2>
                       <div className="w-more">
-                        <span className="w-ctegory">Web Design</span> / <span className="w-date">18 Sep. 2018</span>
+                        <span className="w-ctegory">{a.category}</span>
+                        /
+                        <span className="w-date">{a.date}</span>
                       </div>
                     </div>
                     <div className="col-sm-4">
                       <div className="w-like">
-                        <a href="portfolio-details.html"> <span className="bi bi-plus-circle"></span></a>
+                        <a href={a.href}> <span className="bi bi-plus-circle"></span></a>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="col-md-4">
-              <div className="work-box">
-                <a href="assets/img/work-2.jpg" data-gallery="portfolioGallery" className="portfolio-lightbox">
-                  <div className="work-img">
-                    <img src="assets/img/work-2.jpg" alt="" className="img-fluid" />
-                  </div>
-                </a>
-                <div className="work-content">
-                  <div className="row">
-                    <div className="col-sm-8">
-                      <h2 className="w-title">Loreda Cuno Nere</h2>
-                      <div className="w-more">
-                        <span className="w-ctegory">Web Design</span> / <span className="w-date">18 Sep. 2018</span>
-                      </div>
-                    </div>
-                    <div className="col-sm-4">
-                      <div className="w-like">
-                        <a href="portfolio-details.html"> <span className="bi bi-plus-circle"></span></a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="work-box">
-                <a href="assets/img/work-3.jpg" data-gallery="portfolioGallery" className="portfolio-lightbox">
-                  <div className="work-img">
-                    <img src="assets/img/work-3.jpg" alt="" className="img-fluid" />
-                  </div>
-                </a>
-                <div className="work-content">
-                  <div className="row">
-                    <div className="col-sm-8">
-                      <h2 className="w-title">Mavrito Lana Dere</h2>
-                      <div className="w-more">
-                        <span className="w-ctegory">Web Design</span> / <span className="w-date">18 Sep. 2018</span>
-                      </div>
-                    </div>
-                    <div className="col-sm-4">
-                      <div className="w-like">
-                        <a href="portfolio-details.html"> <span className="bi bi-plus-circle"></span></a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="work-box">
-                <a href="assets/img/work-4.jpg" data-gallery="portfolioGallery" className="portfolio-lightbox">
-                  <div className="work-img">
-                    <img src="assets/img/work-4.jpg" alt="" className="img-fluid" />
-                  </div>
-                </a>
-                <div className="work-content">
-                  <div className="row">
-                    <div className="col-sm-8">
-                      <h2 className="w-title">Bindo Laro Cado</h2>
-                      <div className="w-more">
-                        <span className="w-ctegory">Web Design</span> / <span className="w-date">18 Sep. 2018</span>
-                      </div>
-                    </div>
-                    <div className="col-sm-4">
-                      <div className="w-like">
-                        <a href="portfolio-details.html"> <span className="bi bi-plus-circle"></span></a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="work-box">
-                <a href="assets/img/work-5.jpg" data-gallery="portfolioGallery" className="portfolio-lightbox">
-                  <div className="work-img">
-                    <img src="assets/img/work-5.jpg" alt="" className="img-fluid" />
-                  </div>
-                </a>
-                <div className="work-content">
-                  <div className="row">
-                    <div className="col-sm-8">
-                      <h2 className="w-title">Studio Lena Mado</h2>
-                      <div className="w-more">
-                        <span className="w-ctegory">Web Design</span> / <span className="w-date">18 Sep. 2018</span>
-                      </div>
-                    </div>
-                    <div className="col-sm-4">
-                      <div className="w-like">
-                        <a href="portfolio-details.html"> <span className="bi bi-plus-circle"></span></a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="work-box">
-                <a href="assets/img/work-6.jpg" data-gallery="portfolioGallery" className="portfolio-lightbox">
-                  <div className="work-img">
-                    <img src="assets/img/work-6.jpg" alt="" className="img-fluid" />
-                  </div>
-                </a>
-                <div className="work-content">
-                  <div className="row">
-                    <div className="col-sm-8">
-                      <h2 className="w-title">Studio Big Bang</h2>
-                      <div className="w-more">
-                        <span className="w-ctegory">Web Design</span> / <span className="w-date">18 Sep. 2017</span>
-                      </div>
-                    </div>
-                    <div className="col-sm-4">
-                      <div className="w-like">
-                        <a href="portfolio-details.html"> <span className="bi bi-plus-circle"></span></a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            </div>)}
 
           </div>
         </div>
       </section>{/* <!-- End Portfolio Section --> */}
 
       {/* <!-- ======= Testimonials Section ======= --> */}
-      <div className="testimonials paralax-mf bg-image" style={{backgroundImage: "url(assets/img/overlay-bg.jpg)"}}>
+      
+      <div className="testimonials paralax-mf bg-image" style={{
+        backgroundImage: "url(assets/img/overlay-bg.jpg)"
+      }}>
         <div className="overlay-mf"></div>
         <div className="container">
           <div className="row">
@@ -533,7 +576,7 @@ export default function Home() {
                         </p>
                       </div>
                     </div>
-                  </div>{/* <!-- End testimonial item --> */}
+                  </div>
 
                   <div className="swiper-slide">
                     <div className="testimonial-box">
@@ -548,19 +591,18 @@ export default function Home() {
                         </p>
                       </div>
                     </div>
-                  </div>{/* <!-- End testimonial item --> */}
+                  </div>
                 </div>
                 <div className="swiper-pagination"></div>
               </div>
-
               
-              {/* 
-                <div id="testimonial-mf" className="owl-carousel owl-theme"></div>
-              */}
+              <div id="testimonial-mf" className="owl-carousel owl-theme"></div>
             </div>
           </div>
         </div>
-      </div>{/* <!-- End Testimonials Section --> */}
+      </div>
+      
+      {/* <!-- End Testimonials Section --> */}
 
       {/* <!-- ======= Blog Section ======= --> */}
       <section id="blog" className="blog-mf sect-pt4 route">
@@ -786,7 +828,12 @@ export default function Home() {
       </div>
     </footer>
 
-    {/* Template Main JS File */}
-    <script async src="assets/js/main.js"></script>
+    <div style={preloaderStyle}>
+      <DotLoader loading speedMultiplier={2.5} color="grey" size={160} />
+    </div>
+    
+    <a href="#" className="back-to-top d-flex align-items-center justify-content-center">
+      <i className="bi bi-arrow-up-short" />
+    </a> 
   </>
 }
