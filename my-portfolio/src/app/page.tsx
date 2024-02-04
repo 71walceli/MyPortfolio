@@ -14,7 +14,7 @@ import { RaimbowColorBar } from "../components/RaimbowProgressBar"
 import T from "../translations/page"
 import { on, onscroll, scrollto, select } from "@/functions"
 import { DotLoader } from "react-spinners"
-import { articles } from "@/articles"
+import { ArticlesCardListView, articles } from "@/articles"
 
 export default function Home() {
   const {language, setLanguage, t} = useLanguage()
@@ -519,33 +519,7 @@ export default function Home() {
           </div>
           <div className="row">
             {/* TODO Add actual articles */}
-            {articles.map(a => <div className="col-md-4" key={a.href}>
-              <div className="work-box">
-                <a href={a.href} data-gallery="portfolioGallery" className="portfolio-lightbox">
-                  <div className="work-img">
-                    <img src={a.mainPicSrc} alt="" className="img-fluid" />
-                  </div>
-                </a>
-                <div className="work-content">
-                  <div className="row">
-                    <div className="col-sm-8">
-                      <h2 className="w-title">{a.title}</h2>
-                      <div className="w-more">
-                        <span className="w-ctegory">{a.category}</span>
-                        /
-                        <span className="w-date">{a.date}</span>
-                      </div>
-                    </div>
-                    <div className="col-sm-4">
-                      <div className="w-like">
-                        <a href={a.href}> <span className="bi bi-plus-circle"></span></a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>)}
-
+            <ArticlesCardListView />
           </div>
         </div>
       </section>{/* <!-- End Portfolio Section --> */}

@@ -1,5 +1,5 @@
 "use client"
-import React, { ReactNode, useState, createContext, useContext, Context } from "react";
+import React, { ReactNode, useState, createContext, useContext, Context, useMemo } from "react";
 
 type LanguageContextProps = {
   language: string | null;
@@ -22,12 +22,33 @@ export const useLanguage = () => {
   const {language, setLanguage} = useContext(TranslateContext)
 
   const t = (key): string | string[] | React.JSX.Element | React.JSX.Element[] => key[language]
-  /*
-  TODO Create a dynamic dict which picks everythong of the language
-    const tr = {
-      key: translation
-    }
-  */
-
+  
   return { language, setLanguage, t }
 }
+
+
+export const useTranslations = (translations: {}, languages: []) => {
+  const {language, setLanguage} = useContext(TranslateContext)
+
+  const T = useMemo(() => Object.entries(translations).reduce(function reduceTranslation(index, current) {
+    const key = current[0]
+    let value = current[1]
+    const nonLanguageKeys = translations.constructor.name === "Object" ? Object.keys(value) : []
+    languages.forEach(_language => {
+      const index = nonLanguageKeys.findIndex(x => x === _language)
+      index > -1 ? nonLanguageKeys.splice(index, 1) : null
+    })
+    let subDictuinaries = nonLanguageKeys.map(key => ({ [key]: value[key] }))
+    subDictuinaries = subDictuinaries.map(dict => Object.entries(dict).reduce(reduceTranslation, {}))
+    if (subDictuinaries.length) {
+      index[key] = subDictuinaries.reduce((acc, cur) => ({ ...acc, ...cur }), {})
+      return index
+    }
+    index[key] = value[language]
+    return index
+  }, {}), [language])
+
+  return { language, setLanguage, T }
+}
+
+

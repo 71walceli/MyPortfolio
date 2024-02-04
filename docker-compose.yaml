@@ -1,0 +1,56 @@
+version: "3"
+services:
+  #labsolutions-instagram-api-dev:
+  #  build: ./instagramApi
+  #  environment:
+  #    TZ: America/Guayaquil
+  #    ENVIRONMENT: dev
+  #  entrypoint: yarn start
+  #  hostname: labsolutions-instagram-api-dev
+  #  image: labsolutions/instagram-api
+  #  user: "1000:1000"
+  #  volumes:
+  #    - ./Data/instagramApi:/Data
+  nextjs-server:
+    entrypoint: yarn run dev
+    hostname: nextjs-server.my-portfolio
+    image: node:20
+    #ports:
+    #  - 8000:80/tcp
+    user: "1000:1000"
+    volumes:
+      - ./my-portfolio:/App
+    working_dir: /App
+  
+  httpd:
+    build:
+      context: ./WordPress
+      args:
+        UID: 1000
+        GID: 1000
+      dockerfile: httpd.Dockerfile
+    environment:
+      DB_DATABASE: wordpress
+      DB_USER: demos
+      DB_PASSWORD: kIVn#z^%-30eoMH7UHQQT;11iEs3aP96
+      DB_HOST: mariadb-all-demos
+      TZ: America/Guayaquil
+    hostname: my_portfolio.wordpress.internal
+    volumes:
+      - ./WordPress/App:/var/www/html/:rw
+
+  mariadb-all-demos:
+    environment:
+      MARIADB_USER: demos
+      MARIADB_PASSWORD: kIVn#z^%-30eoMH7UHQQT;11iEs3aP96
+      MARIADB_DATABASE: wordpress
+      MARIADB_RANDOM_ROOT_PASSWORD: 1
+      TZ: America/Guayaquil
+    hostname: mariadb-all-demos
+    image: mariadb:10.9
+    restart: unless-stopped
+    user: "1000:0"
+    volumes:
+      - ./WordPress/DB:/var/lib/mysql
+
+
