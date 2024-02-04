@@ -1,6 +1,6 @@
 'use client'
 
-import { Ref, useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 
 import Typed from "typed.js"  // For aototyping string
 import PoreCounter from "@srexi/purecounterjs"
@@ -8,16 +8,17 @@ import GLightbox from "glightbox"
 import Swiper from "swiper"
 import $ from "jquery"
 
-import { useLanguage } from "../translations"
+import { useTranslations } from "../translations"
 import { RaimbowColorBar } from "../components/RaimbowProgressBar"
 
-import T from "../translations/page"
+import translations from "../translations/page"
 import { on, onscroll, scrollto, select } from "@/functions"
 import { DotLoader } from "react-spinners"
-import { ArticlesCardListView, articles } from "@/articles"
+import { ArticlesCardListView } from "@/articles"
 
 export default function Home() {
-  const {language, setLanguage, t} = useLanguage()
+  //const {language, setLanguage, t} = useLanguage()
+  const {language, setLanguage, T} = useTranslations(translations)  // TODO
   const [loaded, setLoaded] = useState(false);
   
   useEffect(() => {
@@ -200,7 +201,7 @@ export default function Home() {
   useEffect(() => {
     if (!loaded) return;
     const typed = new Typed('#typed', {
-      strings: t(T.typed),
+      strings: T.typed,
       typeSpeed: 50,
       backSpeed: 11,
       backDelay: 3000,
@@ -212,6 +213,7 @@ export default function Home() {
     }
   }, [language, loaded])
 
+  // TODO Export to CSS, Tailwindo or styled components
   const progressBarLabelStyle = {
     textShadow: 
       "-3px -3px 3px black, -3px 3px 3px black, 3px 3px 3px black, 3px -3px 3px black"
@@ -220,7 +222,7 @@ export default function Home() {
   
   const pureCounterEndSeconds = 2.25
   
-  const preloaderStyle = {
+  const preloaderStyle = {  // Must be inlined so it loads first, w/o reflows.
     opacity: loaded ? 0 : 1,
     visibility: loaded ? "hidden" : "visible",
     transition: "all 0.333s linear",
@@ -252,11 +254,10 @@ export default function Home() {
         {/* TODO Create a t() functhin within a language hook */}
         <nav id="navbar" className="navbar">
           <ul>
-            <li><a className="nav-link scrollto active" href="#about">{t(T.aboutMe)}</a></li>
-            <li><a className="nav-link scrollto" href="#services">{t(T.services)}</a></li>
-            <li><a className="nav-link scrollto" href="#work">{t(T.work)}</a></li>
-            <li><a className="nav-link scrollto" href="#blog">{t(T.blog)}</a></li>
-            <li><a className="nav-link scrollto" href="#contact">{t(T.contact)}</a></li>
+            <li><a className="nav-link scrollto" href="#hero">{T.Home}</a></li>
+            <li><a className="nav-link scrollto" href="#work">{T.work}</a></li>
+            <li><a className="nav-link scrollto" href="#services">{T.services}</a></li>
+            <li><a className="nav-link scrollto" href="#contact">{T.contact}</a></li>
             <li className="dropdown">
               <a href="#">
                 <i className="bi bi-translate" aria-hidden="true"></i>
@@ -284,11 +285,11 @@ export default function Home() {
         <div className="table-cell">
           <div className="container">
             {/* <p className="display-6 color-d">Hello, world!</p> */}
-            <h1 className="hero-title mb-4">{t(T.iAm)}</h1>
+            <h1 className="hero-title mb-4">{T.iAm}</h1>
             <p className="hero-subtitle"><span id="typed" /></p>
             <p className="pt-3">
               <a className="btn btn-primary btn js-scroll px-4" href="#about" role="button">
-                {t(T.learnMore)}
+                {T.learnMore}
               </a>
             </p>
           </div>
@@ -298,98 +299,27 @@ export default function Home() {
     {/* <!-- End Hero Section --> */}
 
     <main id="main">
-
-      {/* <!-- ======= About Section ======= --> */}
-      <section id="about" className="about-mf sect-pt4 route">
+      {/* <!-- ======= Portfolio Section ======= --> */}
+      <section id="work" className="portfolio-mf sect-pt4 route">
         <div className="container">
           <div className="row">
             <div className="col-sm-12">
-              <div className="box-shadow-full">
-                <div className="row">
-                  <div className="col-md-6">
-                    <div className="row">
-                      <div className="col-sm-6 col-md-5">
-                        <div className="about-img">
-                          {/* TODO Import all images */}
-                          <img alt="" className="img-fluid rounded b-shadow-a" 
-                            src="assets/img/myFace.jpg" 
-                          />
-                        </div>
-                      </div>
-                      <div className="col-sm-6 col-md-7">
-                        <div className="about-info">
-                          <p>
-                            <span className="title-s">{t(T.name)}: </span>
-                            <span>Walter Celi</span>
-                          </p>
-                          <p>
-                            <span className="title-s">{t(T.profile)}: </span>
-                            <span>{t(T.profileDescription)}</span>
-                          </p>
-                          <p>
-                            <span className="title-s">{t(T.email)}: </span>
-                            <span>contact@example.com</span>
-                          </p>
-                          <p>
-                            <span className="title-s">{t(T.phone)}: </span>
-                            <span>+593 99 415 2636</span>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="skill-mf">
-                      <p className="title-s">{t(T.skills)}</p>
-                      <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={70} 
-                        className="py-2" customLabel="React"
-                      />
-                      <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={50} 
-                        className="py-2" customLabel="React Native"
-                      />
-                      <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={40} 
-                        className="py-2" customLabel="PHP & Apache"
-                      />
-                      <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={80} 
-                        className="py-2" customLabel="Node & Express"
-                      />
-                      <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={90} 
-                        className="py-2" customLabel="Linux"
-                      />
-                      <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={66} 
-                        className="py-2" customLabel="Docker"
-                      />
-                      <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={75} 
-                        className="py-2" customLabel="MariaDB & SQL Server"
-                      />
-                      <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={55} 
-                        className="py-2" customLabel="Jupyter"
-                      />
-                      <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={70} 
-                        className="py-2" customLabel="Cloud"
-                      />
-                      <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={40} 
-                        className="py-2" customLabel="Data Analytics"
-                      />
-                      <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={35}
-                        className="py-2" customLabel="Machine Learning"
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-6">  
-                    <div className="about-me pt-4 pt-md-0">
-                      <div className="title-box-2">
-                        <h5 className="title-left">
-                          {t(T.aboutMe)}
-                        </h5>
-                      </div>
-                      {t(T.aboutParagraps).map((p, i) => <p className="lead" key={i}>{p}</p>)}
-                    </div>
-                  </div>
-                </div>
+              <div className="title-box text-center">
+                <h3 className="title-a">{ T.portfolio }</h3>
+                <p className="subtitle-a">
+                  {T.portfolioDescription}
+                </p>
+                <div className="line-mf"></div>
               </div>
             </div>
           </div>
+          <div className="row">
+            {/* TODO Add actual articles */}
+            <ArticlesCardListView />
+          </div>
         </div>
-      </section>{/* <!-- End About Section --> */}
+      </section>{/* <!-- End Portfolio Section --> */}
+
 
       {/* <!-- ======= Services Section ======= --> */}
       <section id="services" className="services-mf pt-5 route">
@@ -398,7 +328,7 @@ export default function Home() {
             <div className="col-sm-12">
               <div className="title-box text-center">
                 <h3 className="title-a">
-                  {t(T.services)}
+                  {T.services}
                 </h3>
                 {/* <p className="subtitle-a">
                   Lorem ipsum, dolor sit amet consectetur adipisicing elit.
@@ -408,7 +338,7 @@ export default function Home() {
             </div>
           </div>
           <div className="row">
-            {t(T.servicesDescriptions).map(service => 
+            {T.servicesDescriptions.map(service => 
               <div className="col-md-4" key={service.title}>
                 <div className="service-box">
                   <div className="service-ico">
@@ -425,272 +355,96 @@ export default function Home() {
         </div>
       </section>{/* <!-- End Services Section --> */}
 
-      {/* <!-- ======= Counter Section ======= --> */}
-      <div className="section-counter paralax-mf bg-image" style={
-        {backgroundImage: "url(assets/img/counters-bg.jpg)"}
-      }>
-        <div className="overlay-mf" style={{
-          backgroundColor: "green"
-        }} />
-        <div className="container position-relative">
-          <div className="row">
-            <div className="col-sm-4 col-lg-4">
-              <div className="counter-box counter-box pt-4 pt-md-0">
-                <div className="counter-ico">
-                  <span className="ico-circle"><i className="bi bi-check"></i></span>
-                </div>
-                <div className="counter-num">
-                  <p className="counter">
-                    <span className="purecounter" data-purecounter-start="0" data-purecounter-end="20" 
-                      data-purecounter-duration={pureCounterEndSeconds} 
-                    />
-                    +
-                  </p>
-                  <span className="counter-text">{t(T.numbers.projectsDone)}</span>
-                </div>
-              </div>
-            </div>
-            <div className="col-sm-4 col-lg-4">
-              <div className="counter-box pt-4 pt-md-0">
-                <div className="counter-ico">
-                  <span className="ico-circle"><i className="bi bi-journal-richtext"></i></span>
-                </div>
-                {/* TODO Debe decir:
-                  N años
-                  Experiencia
-                */}
-                <div className="counter-num">
-                  <p className="counter">
-                    <span 
-                      className="purecounter" data-purecounter-start="0" data-purecounter-end="2" 
-                      data-purecounter-duration={pureCounterEndSeconds} 
-                    />
-                    +
-                  </p>
-                  <span className="counter-text">{t(T.numbers.yearsOfExperience)}</span>
-                </div>
-              </div>
-            </div>
-            <div className="col-sm-4 col-lg-4">
-              <div className="counter-box pt-4 pt-md-0">
-                <div className="counter-ico">
-                  <span className="ico-circle"><i className="bi bi-people"></i></span>
-                </div>
-                <div className="counter-num">
-                <p className="counter">
-                    <span 
-                      className="purecounter" data-purecounter-start="0" data-purecounter-end="7" 
-                      data-purecounter-duration={pureCounterEndSeconds} 
-                    />
-                    +
-                  </p>
-                  <span className="counter-text">{t(T.numbers.totalClients)}</span>
-                </div>
-              </div>
-            </div>
-            {/* <div className="col-sm-3 col-lg-3">
-              <div className="counter-box pt-4 pt-md-0">
-                <div className="counter-ico">
-                  <span className="ico-circle"><i className="bi bi-award"></i></span>
-                </div>
-                <div className="counter-num">
-                  <p data-purecounter-start="0" data-purecounter-end="48" data-purecounter-duration="1" className="counter purecounter"></p>
-                  <span className="counter-text">{t(T.numbers.awardsWon)}</span>
-                </div>
-              </div>
-            </div> */}
-          </div>
-        </div>
-      </div>{/* <!-- End Counter Section --> */}
-
-      {/* <!-- ======= Portfolio Section ======= --> */}
-      <section id="work" className="portfolio-mf sect-pt4 route">
-        <div className="container">
-          <div className="row">
-            <div className="col-sm-12">
-              <div className="title-box text-center">
-                <h3 className="title-a">{ t(T.portfolio) }</h3>
-                <p className="subtitle-a">
-                  {t(T.portfolioDescription)}
-                </p>
-                <div className="line-mf"></div>
-              </div>
-            </div>
-          </div>
-          <div className="row">
-            {/* TODO Add actual articles */}
-            <ArticlesCardListView />
-          </div>
-        </div>
-      </section>{/* <!-- End Portfolio Section --> */}
-
-      {/* <!-- ======= Testimonials Section ======= --> */}
-      
-      <div className="testimonials paralax-mf bg-image" style={{
+      {/* <!-- ======= About Section ======= --> */}
+      <section className="testimonials paralax-mf bg-image" style={{
         backgroundImage: "url(assets/img/overlay-bg.jpg)"
       }}>
-        <div className="overlay-mf"></div>
+        <div className="overlay-mf bg-warning"></div>
         <div className="container">
-          <div className="row">
-            <div className="col-md-12">
-
-              <div className="testimonials-slider swiper" data-aos="fade-up" data-aos-delay="100">
-                <div className="swiper-wrapper">
-
-                  <div className="swiper-slide">
-                    <div className="testimonial-box">
-                      <div className="author-test">
-                        <img src="assets/img/testimonial-2.jpg" alt="" className="rounded-circle b-shadow-a" />
-                        <span className="author">Xavi Alonso</span>
-                      </div>
-                      <div className="content-test">
-                        <p className="description lead">
-                          Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Lorem ipsum dolor sit amet,
-                          consectetur adipiscing elit.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="swiper-slide">
-                    <div className="testimonial-box">
-                      <div className="author-test">
-                        <img src="assets/img/testimonial-4.jpg" alt="" className="rounded-circle b-shadow-a" />
-                        <span className="author">Marta Socrate</span>
-                      </div>
-                      <div className="content-test">
-                        <p className="description lead">
-                          Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Lorem ipsum dolor sit amet,
-                          consectetur adipiscing elit.
-                        </p>
-                      </div>
-                    </div>
+          <div className="row position-relative">
+            <div className="col-md-6">
+              <div className="row">
+                <div className="col-sm-6 col-md-5">
+                  <div className="about-img">
+                    {/* TODO Import all images */}
+                    <img alt="" className="img-fluid rounded b-shadow-a" 
+                      src="assets/img/myFace.jpg" 
+                    />
                   </div>
                 </div>
-                <div className="swiper-pagination"></div>
+                <div className="col-sm-6 col-md-7">
+                  <div className="about-info">
+                    <p>
+                      <span className="title-s">{T.name}: </span>
+                      <span>Walter Celi</span>
+                    </p>
+                    <p>
+                      <span className="title-s">{T.profile}: </span>
+                      <span>{T.profileDescription}</span>
+                    </p>
+                    <p>
+                      <span className="title-s">{T.email}: </span>
+                      <span>contact@example.com</span>
+                    </p>
+                    <p>
+                      <span className="title-s">{T.phone}: </span>
+                      <span>+593 99 415 2636</span>
+                    </p>
+                  </div>
+                </div>
               </div>
-              
-              <div id="testimonial-mf" className="owl-carousel owl-theme"></div>
+              <div className="skill-mf">
+                <p className="title-s">{T.skills}</p>
+                <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={70} 
+                  className="py-2" customLabel="React"
+                />
+                <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={50} 
+                  className="py-2" customLabel="React Native"
+                />
+                <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={40} 
+                  className="py-2" customLabel="PHP & Apache"
+                />
+                <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={80} 
+                  className="py-2" customLabel="Node & Express"
+                />
+                <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={90} 
+                  className="py-2" customLabel="Linux"
+                />
+                <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={66} 
+                  className="py-2" customLabel="Docker"
+                />
+                <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={75} 
+                  className="py-2" customLabel="MariaDB & SQL Server"
+                />
+                <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={55} 
+                  className="py-2" customLabel="Jupyter"
+                />
+                <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={70} 
+                  className="py-2" customLabel="Cloud"
+                />
+                <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={40} 
+                  className="py-2" customLabel="Data Analytics"
+                />
+                <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={35}
+                  className="py-2" customLabel="Machine Learning"
+                />
+              </div>
+            </div>
+            <div className="col-md-6">  
+              <div className="about-me pt-4 pt-md-0">
+                <div className="title-box-2">
+                  <h5 className="title-left">
+                    {T.aboutMe}
+                  </h5>
+                </div>
+                {T.aboutParagraps.map((p, i) => <p className="lead" key={i}>{p}</p>)}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
       
       {/* <!-- End Testimonials Section --> */}
-
-      {/* <!-- ======= Blog Section ======= --> */}
-      <section id="blog" className="blog-mf sect-pt4 route">
-        <div className="container">
-          <div className="row">
-            <div className="col-sm-12">
-              <div className="title-box text-center">
-                <h3 className="title-a">
-                  Blog
-                </h3>
-                <p className="subtitle-a">
-                  Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                </p>
-                <div className="line-mf"></div>
-              </div>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-md-4">
-              <div className="card card-blog">
-                <div className="card-img">
-                  <a href="blog-single.html"><img src="assets/img/post-1.jpg" alt="" className="img-fluid" /></a>
-                </div>
-                <div className="card-body">
-                  <div className="card-category-box">
-                    <div className="card-category">
-                      <h6 className="category">Travel</h6>
-                    </div>
-                  </div>
-                  <h3 className="card-title"><a href="blog-single.html">See more ideas about Travel</a></h3>
-                  <p className="card-description">
-                    Proin eget tortor risus. Pellentesque in ipsum id orci porta dapibus. Praesent sapien massa, convallis
-                    a pellentesque nec,
-                    egestas non nisi.
-                  </p>
-                </div>
-                <div className="card-footer">
-                  <div className="post-author">
-                    <a href="#">
-                      <img src="assets/img/testimonial-2.jpg" alt="" className="avatar rounded-circle" />
-                      <span className="author">Morgan Freeman</span>
-                    </a>
-                  </div>
-                  <div className="post-date">
-                    <span className="bi bi-clock"></span> 10 min
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="card card-blog">
-                <div className="card-img">
-                  <a href="blog-single.html"><img src="assets/img/post-2.jpg" alt="" className="img-fluid" /></a>
-                </div>
-                <div className="card-body">
-                  <div className="card-category-box">
-                    <div className="card-category">
-                      <h6 className="category">Web Design</h6>
-                    </div>
-                  </div>
-                  <h3 className="card-title"><a href="blog-single.html">See more ideas about Travel</a></h3>
-                  <p className="card-description">
-                    Proin eget tortor risus. Pellentesque in ipsum id orci porta dapibus. Praesent sapien massa, convallis
-                    a pellentesque nec,
-                    egestas non nisi.
-                  </p>
-                </div>
-                <div className="card-footer">
-                  <div className="post-author">
-                    <a href="#">
-                      <img src="assets/img/testimonial-2.jpg" alt="" className="avatar rounded-circle" />
-                      <span className="author">Morgan Freeman</span>
-                    </a>
-                  </div>
-                  <div className="post-date">
-                    <span className="bi bi-clock"></span> 10 min
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="card card-blog">
-                <div className="card-img">
-                  <a href="blog-single.html"><img src="assets/img/post-3.jpg" alt="" className="img-fluid" /></a>
-                </div>
-                <div className="card-body">
-                  <div className="card-category-box">
-                    <div className="card-category">
-                      <h6 className="category">Web Design</h6>
-                    </div>
-                  </div>
-                  <h3 className="card-title"><a href="blog-single.html">See more ideas about Travel</a></h3>
-                  <p className="card-description">
-                    Proin eget tortor risus. Pellentesque in ipsum id orci porta dapibus. Praesent sapien massa, convallis
-                    a pellentesque nec,
-                    egestas non nisi.
-                  </p>
-                </div>
-                <div className="card-footer">
-                  <div className="post-author">
-                    <a href="#">
-                      <img src="assets/img/testimonial-2.jpg" alt="" className="avatar rounded-circle" />
-                      <span className="author">Morgan Freeman</span>
-                    </a>
-                  </div>
-                  <div className="post-date">
-                    <span className="bi bi-clock"></span> 10 min
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>{/* <!-- End Blog Section --> */}
 
       {/* <!-- ======= Contact Section ======= --> */}
       <section id="contact" className="paralax-mf footer-paralax bg-image sect-mt4 route" style={{backgroundImage: "url(assets/img/overlay-bg.jpg)"}}>

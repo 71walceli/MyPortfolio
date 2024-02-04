@@ -1,5 +1,7 @@
 "use client"
-import React, { ReactNode, useState, createContext, useContext, Context, useMemo } from "react";
+import React, { ReactNode, useState, createContext, useContext, Context, useMemo, useEffect } from "react";
+
+export const supportedLanguages = ["en", "es"]
 
 type LanguageContextProps = {
   language: string | null;
@@ -27,14 +29,14 @@ export const useLanguage = () => {
 }
 
 
-export const useTranslations = (translations: {}, languages: []) => {
+export const useTranslations = (translations: {}) => {
   const {language, setLanguage} = useContext(TranslateContext)
 
   const T = useMemo(() => Object.entries(translations).reduce(function reduceTranslation(index, current) {
     const key = current[0]
     let value = current[1]
     const nonLanguageKeys = translations.constructor.name === "Object" ? Object.keys(value) : []
-    languages.forEach(_language => {
+    supportedLanguages.forEach(_language => {
       const index = nonLanguageKeys.findIndex(x => x === _language)
       index > -1 ? nonLanguageKeys.splice(index, 1) : null
     })
@@ -47,6 +49,7 @@ export const useTranslations = (translations: {}, languages: []) => {
     index[key] = value[language]
     return index
   }, {}), [language])
+  useEffect(() => console.log({ T }), [T])
 
   return { language, setLanguage, T }
 }

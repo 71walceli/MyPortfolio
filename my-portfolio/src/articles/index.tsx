@@ -15,7 +15,7 @@ export const articles = {
 
 export const ArticlesCardListView = ({ ...props }) => {
   const { language } = useContext(TranslateContext)
-  const { T } = useTranslations(translations, ["en", "es"])
+  const { T } = useTranslations(translations)
 
   return <>
     {Object.entries(articles).map(([id, a]) => 
