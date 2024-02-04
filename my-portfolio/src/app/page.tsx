@@ -15,10 +15,11 @@ import translations from "../translations/page"
 import { on, onscroll, scrollto, select } from "@/functions"
 import { DotLoader } from "react-spinners"
 import { ArticlesCardListView } from "@/articles"
+import Header from "@/components/Header"
+
 
 export default function Home() {
-  //const {language, setLanguage, t} = useLanguage()
-  const {language, setLanguage, T} = useTranslations(translations)  // TODO
+  const {language, T} = useTranslations(translations)
   const [loaded, setLoaded] = useState(false);
   
   useEffect(() => {
@@ -220,8 +221,6 @@ export default function Home() {
     ,
   }
   
-  const pureCounterEndSeconds = 2.25
-  
   const preloaderStyle = {  // Must be inlined so it loads first, w/o reflows.
     opacity: loaded ? 0 : 1,
     visibility: loaded ? "hidden" : "visible",
@@ -240,43 +239,9 @@ export default function Home() {
     overflow: "hidden",
     background: "white",
   }
+  
   return <>
-    <header id="header" className="fixed-top">
-      <div className="container d-flex align-items-center justify-content-between">
-        <h1 className="logo"><a href="index.html">DevFolio</a></h1>
-        {/* 
-          Uncomment below if you prefer to use an image logo
-          <a href="index.html" className="logo">
-            <img src="assets/img/logo.png" alt="" className="img-fluid" />
-          </a>
-        */}
-
-        {/* TODO Create a t() functhin within a language hook */}
-        <nav id="navbar" className="navbar">
-          <ul>
-            <li><a className="nav-link scrollto" href="#hero">{T.Home}</a></li>
-            <li><a className="nav-link scrollto" href="#work">{T.work}</a></li>
-            <li><a className="nav-link scrollto" href="#services">{T.services}</a></li>
-            <li><a className="nav-link scrollto" href="#contact">{T.contact}</a></li>
-            <li className="dropdown">
-              <a href="#">
-                <i className="bi bi-translate" aria-hidden="true"></i>
-              </a>
-              <ul>
-                <li><a href="#/" onClick={() => setLanguage("es")}>
-                  <span className="fi fi-es"></span>Español
-                </a></li>
-                <li><a href="#/" onClick={() => setLanguage("en")}>
-                  <span className="fi fi-us"></span>English
-                </a></li>
-              </ul>
-            </li> 
-          </ul>
-          <i className="bi bi-list mobile-nav-toggle"></i>
-        </nav>
-
-      </div>
-    </header>
+    <Header />
 
     {/* ======= Hero Section ======= */}
     <div id="hero" className="hero route bg-image" style={{backgroundImage: "url(assets/img/hero-bg.jpg)"}}>
@@ -319,7 +284,6 @@ export default function Home() {
           </div>
         </div>
       </section>{/* <!-- End Portfolio Section --> */}
-
 
       {/* <!-- ======= Services Section ======= --> */}
       <section id="services" className="services-mf pt-5 route">
@@ -443,11 +407,10 @@ export default function Home() {
           </div>
         </div>
       </section>
-      
-      {/* <!-- End Testimonials Section --> */}
+      {/* <!-- End About Section --> */}
 
       {/* <!-- ======= Contact Section ======= --> */}
-      <section id="contact" className="paralax-mf footer-paralax bg-image sect-mt4 route" style={{backgroundImage: "url(assets/img/overlay-bg.jpg)"}}>
+      <section id="contact" className="paralax-mf footer-paralax bg-image oute" style={{backgroundImage: "url(assets/img/overlay-bg.jpg)"}}>
         <div className="overlay-mf"></div>
         <div className="container">
           <div className="row">
@@ -458,7 +421,7 @@ export default function Home() {
                     <div className="col-md-6">
                       <div className="title-box-2">
                         <h5 className="title-left">
-                          Send Message Us
+                          {T.contactForm.SendMessage}
                         </h5>
                       </div>
                       <div>
@@ -466,31 +429,39 @@ export default function Home() {
                           <div className="row">
                             <div className="col-md-12 mb-3">
                               <div className="form-group">
-                                <input type="text" name="name" className="form-control" id="name" placeholder="Your Name" required />
+                                <input type="text" name="name" className="form-control" id="name" 
+                                  placeholder={T.contactForm.YourName} required 
+                                />
                               </div>
                             </div>
                             <div className="col-md-12 mb-3">
                               <div className="form-group">
-                                <input type="email" className="form-control" name="email" id="email" placeholder="Your Email" required />
+                                <input type="email" className="form-control" name="email" id="email" 
+                                  placeholder={T.contactForm.YourEmail} required 
+                                />
                               </div>
                             </div>
                             <div className="col-md-12 mb-3">
                               <div className="form-group">
-                                <input type="text" className="form-control" name="subject" id="subject" placeholder="Subject" required />
+                                <input type="text" className="form-control" name="subject" 
+                                  id="subject" placeholder={T.contactForm.Subject} required 
+                                />
                               </div>
                             </div>
                             <div className="col-md-12">
                               <div className="form-group">
-                                <textarea className="form-control" name="message" rows={5} placeholder="Message" required></textarea>
+                                <textarea className="form-control" name="message" rows={5} 
+                                  placeholder={T.contactForm.Message} required
+                                ></textarea>
                               </div>
                             </div>
                             <div className="col-md-12 text-center my-3">
-                              <div className="loading">Loading</div>
+                              <div className="loading">{T.contactForm.Sending}</div>
                               <div className="error-message"></div>
-                              <div className="sent-message">Your message has been sent. Thank you!</div>
+                              <div className="sent-message">{T.contactForm.Success}</div>
                             </div>
                             <div className="col-md-12 text-center">
-                              <button type="submit" className="button button-a button-big button-rouded">Send Message</button>
+                              <button type="submit" className="button button-a button-big button-rouded">{T.contactForm.Submit}</button>
                             </div>
                           </div>
                         </form>
@@ -499,20 +470,15 @@ export default function Home() {
                     <div className="col-md-6">
                       <div className="title-box-2 pt-4 pt-md-0">
                         <h5 className="title-left">
-                          Get in Touch
+                        {T.contactForm.getInTouch.title}
                         </h5>
                       </div>
                       <div className="more-info">
-                        <p className="lead">
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis dolorum dolorem soluta quidem
-                          expedita aperiam aliquid at.
-                          Totam magni ipsum suscipit amet? Autem nemo esse laboriosam ratione nobis
-                          mollitia inventore?
-                        </p>
+                        {T.contactForm.getInTouch.paragraphs}
                         <ul className="list-ico">
-                          <li><span className="bi bi-geo-alt"></span> 329 WASHINGTON ST BOSTON, MA 02108</li>
-                          <li><span className="bi bi-phone"></span> (617) 557-0089</li>
-                          <li><span className="bi bi-envelope"></span> contact@example.com</li>
+                          {/* <li><span className="bi bi-geo-alt"></span> 329 WASHINGTON ST BOSTON, MA 02108</li> */}
+                          <li><span className="bi bi-phone"></span>+593 99 415 2639</li>
+                          <li><span className="bi bi-envelope"></span>antonini44354@gmail.com</li>
                         </ul>
                       </div>
                       <div className="socials">
@@ -531,7 +497,6 @@ export default function Home() {
           </div>
         </div>
       </section>{/* <!-- End Contact Section --> */}
-
     </main>{/* <!-- End #main --> */}
 
     {/* <!-- ======= Footer ======= --> */}
@@ -540,7 +505,7 @@ export default function Home() {
         <div className="row">
           <div className="col-sm-12">
             <div className="copyright-box">
-              <p className="copyright">&copy; Copyright <strong>DevFolio</strong>. All Rights Reserved</p>
+              <p className="copyright">&copy; Copyright <strong>DevFolio</strong>. {T.footer.AllRightReserved}</p>
               <div className="credits">
                 {/* <!--
                   All the links in the footer should remain intact /.
@@ -548,7 +513,7 @@ export default function Home() {
                   Licensing information: https://bootstrapmade.com/license/
                   Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/buy/?theme=DevFolio
                 --> */}
-                Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+                {T.footer.DesignedBy} <a href="https://bootstrapmade.com/">BootstrapMade</a>
               </div>
             </div>
           </div>

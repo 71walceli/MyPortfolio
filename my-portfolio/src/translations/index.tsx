@@ -1,6 +1,7 @@
 "use client"
 import React, { ReactNode, useState, createContext, useContext, Context, useMemo, useEffect } from "react";
 
+
 export const supportedLanguages = ["en", "es"]
 
 type LanguageContextProps = {
@@ -11,26 +12,19 @@ export const TranslateContext = createContext<LanguageContextProps>({
   language: null,
   setLanguage: (lenguage: string) => undefined,
 })
-export const TranslateProvider = 
-  (props: {children: ReactNode}) => {
-    const [language, setLanguage] = useState("es");
-    
-    return <TranslateContext.Provider value={{ language, setLanguage }}>
-      {props.children}
-    </TranslateContext.Provider>;
-  }
-
-export const useLanguage = () => {
-  const {language, setLanguage} = useContext(TranslateContext)
-
-  const t = (key): string | string[] | React.JSX.Element | React.JSX.Element[] => key[language]
+export const TranslateProvider = (props: {children: ReactNode}) => {
+  const [language, setLanguage] = useState("es");
   
-  return { language, setLanguage, t }
+  return <TranslateContext.Provider value={{ language, setLanguage }}>
+    {props.children}
+  </TranslateContext.Provider>;
 }
-
 
 export const useTranslations = (translations: {}) => {
   const {language, setLanguage} = useContext(TranslateContext)
+  if (!language || !setLanguage) {
+    throw new Error("No context for usage of translations.")
+  }
 
   const T = useMemo(() => Object.entries(translations).reduce(function reduceTranslation(index, current) {
     const key = current[0]
@@ -49,7 +43,6 @@ export const useTranslations = (translations: {}) => {
     index[key] = value[language]
     return index
   }, {}), [language])
-  useEffect(() => console.log({ T }), [T])
 
   return { language, setLanguage, T }
 }

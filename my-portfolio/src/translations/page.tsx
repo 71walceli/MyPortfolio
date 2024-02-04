@@ -288,5 +288,76 @@ export default {
 		en: "experience",
 		es: "experiencia",
 	},
+
+	// Contact Form
+	contactForm: {
+		SendMessage: {
+			en: "Send Us a Message",
+			es: "Escríbanos",
+		},
+		YourName: {
+			en: "Your Name",
+			es: "Su Nombre",
+		},
+		YourEmail: {
+			en: "Your E-mail",
+			es: "Se E-mail",
+		},
+		Subject: {
+			en: "Subject",
+			es: "Asunto",
+		},
+		Message: {
+			en: "Message",
+			es: "Mensaje",
+		},
+		getInTouch: {
+			title: {
+				en: "Get In touch!",
+				es: "¡Contáctenos!",
+			},
+			paragraphs: {
+				en: <p>
+					You're welcome to send us your questions, inquiries or suggestions through this contact 
+					rorm, social media, or any of our means.
+				</p>,
+				es: <p>
+					Siéntase bienvenido de enviar sus preguntas, consultas o sugerencias a través de este 
+					formulario, redes sociales, o cualquiera de nuestros medios.
+				</p>,
+			},
+		},
+		Sending: {
+			en:"Sending",
+			es:"Enviando",
+		},
+		success: {
+			en: "Thank you for getting in touch!",
+			es: "!Gracias por contactarnos¡",
+		},
+		fail: {
+			en: "There was a problem. Please try later.",
+			es: "!Ha ocurrido un error. Intente más tarde por fafor.",
+		},
+		invalid: {
+			en: "Please correct all input errors.",
+			es: "Por favor corrija los errores de entradas.",
+		},
+		Submit: {
+			en: "Send Message.",
+			es: "Enviar",
+		},
+	},
+
+	footer: {
+		AllRightReserved: {
+			en: "All Right Reserved",
+			es: "Todos los Derechos Reservados",
+		},
+		DesignedBy: {
+			en: "Designed By",
+			es: "Diseñado por",
+		},
+	},
 }
 
