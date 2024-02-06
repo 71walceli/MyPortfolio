@@ -2,8 +2,8 @@
 export default {
 	// Hero section
 	iAm: {
-		en: <>I Am <b>Walter Celi</b></>,
-		es: <>Yo soy <b>Walter Celi</b></>,
+		en: <>I Am</>,
+		es: <>Yo soy</>,
 	},
 	typed: {
 		en: [
@@ -360,4 +360,3 @@ export default {
 		},
 	},
 }
-
