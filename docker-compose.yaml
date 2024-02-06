@@ -8,3 +8,9 @@ services:
     volumes:
       - ./my-portfolio:/App
     working_dir: /App
+  produccion:
+    build: ./my-portfolio
+    hostname: uae_simulacion-tareas-produccion
+    user: "1000:1000"
+    #restart: unless-stopped
+    working_dir: /App
