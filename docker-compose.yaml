@@ -1,7 +1,7 @@
 version: "3"
 services:
-  nextjs-server:
-    entrypoint: yarn run dev
+  dev:
+    entrypoint: yarn start
     hostname: nextjs-server.my-portfolio
     image: node:20
     user: "1000:1000"

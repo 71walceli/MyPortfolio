@@ -1,5 +1,3 @@
-'use client'
-
 import { useEffect, useState } from "react"
 
 import Typed from "typed.js"  // For aototyping string
