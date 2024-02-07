@@ -7,10 +7,10 @@ const Header = () => {
   return <>
     <header id="header" className="fixed-top">
       <div className="container d-flex align-items-center justify-content-between">
-        <h1 className="logo"><a href="index.html">DevFolio</a></h1>
+        <h1 className="logo"><a href="/">DevFolio</a></h1>
         {/* 
           Uncomment below if you prefer to use an image logo
-          <a href="index.html" className="logo">
+          <a href="/" className="logo">
             <img src="assets/img/logo.png" alt="" className="img-fluid" />
           </a>
         */}

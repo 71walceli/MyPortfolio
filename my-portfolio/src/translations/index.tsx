@@ -6,11 +6,11 @@ export const supportedLanguages = ["en", "es"]
 
 type LanguageContextProps = {
   language: string | null;
-  setLanguage: (lenguage: string) => undefined;
+  setLanguage: (lenguage: string) => void;
 };
 export const TranslateContext = createContext<LanguageContextProps>({
   language: null,
-  setLanguage: (lenguage: string) => undefined,
+  setLanguage: (lenguage: string) => void 0,
 })
 export const TranslateProvider = (props: {children: ReactNode}) => {
   const [language, setLanguage] = useState("es");
@@ -20,29 +20,36 @@ export const TranslateProvider = (props: {children: ReactNode}) => {
   </TranslateContext.Provider>;
 }
 
-export const useTranslations = (translations: {}) => {
+interface TranslationsDict {
+  [key: string]: string | JSX.Element | JSX.Element[] | TranslationsDict
+}
+export const useTranslations = (translations: TranslationsDict) => {
   const {language, setLanguage} = useContext(TranslateContext)
   if (!language || !setLanguage) {
     throw new Error("No context for usage of translations.")
   }
 
-  const T = useMemo(() => Object.entries(translations).reduce(function reduceTranslation(index, current) {
-    const key = current[0]
-    let value = current[1]
-    const nonLanguageKeys = translations.constructor.name === "Object" ? Object.keys(value) : []
-    supportedLanguages.forEach(_language => {
-      const index = nonLanguageKeys.findIndex(x => x === _language)
-      index > -1 ? nonLanguageKeys.splice(index, 1) : null
-    })
-    let subDictuinaries = nonLanguageKeys.map(key => ({ [key]: value[key] }))
-    subDictuinaries = subDictuinaries.map(dict => Object.entries(dict).reduce(reduceTranslation, {}))
-    if (subDictuinaries.length) {
-      index[key] = subDictuinaries.reduce((acc, cur) => ({ ...acc, ...cur }), {})
+  const T = useMemo(() => Object.entries(translations).reduce(
+    function reduceTranslation(index: TranslationsDict, current) {
+      const key = current[0]
+      let value = current[1]
+      const nonLanguageKeys = translations.constructor.name === "Object" ? Object.keys(value) : []
+      supportedLanguages.forEach(_language => {
+        const index = nonLanguageKeys.findIndex(x => x === _language)
+        index > -1 ? nonLanguageKeys.splice(index, 1) : null
+      })
+      let subDictuinaries = nonLanguageKeys
+        .map(key => ({ [key]: (value as TranslationsDict)[key] }))
+      subDictuinaries = subDictuinaries
+        .map(dict => Object.entries(dict).reduce(reduceTranslation, {}))
+      if (subDictuinaries.length) {
+        index[key] = subDictuinaries.reduce((acc, cur) => ({ ...acc, ...cur }), {})
+        return index
+      }
+      index[key] = (value as TranslationsDict)[language]
       return index
-    }
-    index[key] = value[language]
-    return index
-  }, {}), [language])
+    }, {}
+  ), [language])
 
   return { language, setLanguage, T }
 }

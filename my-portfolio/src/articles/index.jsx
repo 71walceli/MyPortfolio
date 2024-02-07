@@ -1,6 +1,6 @@
-import { TranslateContext, useTranslations } from "@/translations"
+import { TranslateContext, useTranslations } from "../translations"
 import { useContext } from "react"
-import { translations } from "@/translations/articles"
+import { translations } from "../translations/articles"
 
 export const articles = {
   1: {

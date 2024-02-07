@@ -318,7 +318,7 @@ export default {
 			},
 			paragraphs: {
 				en: <p>
-					You're welcome to send us your questions, inquiries or suggestions through this contact 
+					You&apos;re welcome to send us your questions, inquiries or suggestions through this contact 
 					rorm, social media, or any of our means.
 				</p>,
 				es: <p>

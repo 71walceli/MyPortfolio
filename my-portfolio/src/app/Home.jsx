@@ -12,20 +12,20 @@ import { useTranslations } from "../translations"
 import { RaimbowColorBar } from "../components/RaimbowProgressBar"
 
 import translations from "../translations/page"
-import { on, onscroll, scrollto, select } from "@/functions"
+import { on, onscroll, scrollto, select } from "../functions"
 import { DotLoader } from "react-spinners"
-import { ArticlesCardListView } from "@/articles"
-import Header from "@/components/Header"
-import Footer from "@/components/Footer"
+import { ArticlesCardListView } from "../articles"
+import Header from "../components/Header"
+import Footer from "../components/Footer"
 
 
 export default function Home() {
   const {language, T} = useTranslations(translations)
   const [loaded, setLoaded] = useState(false);
-  
+
   useEffect(() => {
     if (loaded) return;
-    //@ts-ignore as main() binds events and starts all client-side template logic
+    //..ts-ignore as main() binds events and starts all client-side template logic
     window.Main?.()
     setTimeout(() => {
       setLoaded(true)
@@ -349,7 +349,7 @@ export default function Home() {
                     </p>
                     <p>
                       <span className="title-s">{T.email}: </span>
-                      <span>contact@example.com</span>
+                      <span>contact..example.com</span>
                     </p>
                     <p>
                       <span className="title-s">{T.phone}: </span>
@@ -479,7 +479,7 @@ export default function Home() {
                         <ul className="list-ico">
                           {/* <li><span className="bi bi-geo-alt"></span> 329 WASHINGTON ST BOSTON, MA 02108</li> */}
                           <li><span className="bi bi-phone"></span>+593 99 415 2639</li>
-                          <li><span className="bi bi-envelope"></span>antonini44354@gmail.com</li>
+                          <li><span className="bi bi-envelope"></span>antonini44354..gmail.com</li>
                         </ul>
                       </div>
                       <div className="socials">
