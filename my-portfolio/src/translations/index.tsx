@@ -5,13 +5,10 @@ import React, { ReactNode, useState, createContext, useContext, Context, useMemo
 export const supportedLanguages = ["en", "es"]
 
 type LanguageContextProps = {
-  language: string | null;
-  setLanguage: (lenguage: string) => void;
+  language?: string | null;
+  setLanguage?: (lenguage: string) => void;
 };
-export const TranslateContext = createContext<LanguageContextProps>({
-  language: null,
-  setLanguage: (lenguage: string) => void 0,
-})
+export const TranslateContext = createContext<LanguageContextProps>({  })
 export const TranslateProvider = (props: {children: ReactNode}) => {
   const [language, setLanguage] = useState("es");
   

@@ -1,14 +1,26 @@
 version: "3"
 services:
-  dev:
+  web-dev:
     entrypoint: yarn start
+    environment: 
+      REACT_APP_API_URL: http://api.nextjs-server.my-portfolio
     hostname: nextjs-server.my-portfolio
     image: node:20
     user: "1000:1000"
     volumes:
       - ./my-portfolio:/App
     working_dir: /App
-  produccion:
+  api-dev: 
+    entrypoint: yarn start
+    environment: 
+      CORS_ORIGIN: http://nextjs-server.my-portfolio
+    hostname: api.nextjs-server.my-portfolio
+    image: node:20
+    user: "1000:1000"
+    volumes:
+      - ./api:/App
+    working_dir: /App
+  web:
     build: ./my-portfolio
     hostname: uae_simulacion-tareas-produccion
     user: "1000:1000"

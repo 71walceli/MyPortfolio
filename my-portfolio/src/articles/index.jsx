@@ -2,6 +2,7 @@ import { TranslateContext, useTranslations } from "../translations"
 import { useContext } from "react"
 import { translations } from "../translations/articles"
 
+
 export const articles = {
   1: {
     href: "blog/LockRightNowApp",
@@ -21,12 +22,12 @@ export const ArticlesCardListView = ({ ...props }) => {
     {Object.entries(articles).map(([id, a]) => 
       <div className="col-md-4" key={id}>
         <div className="work-box">
-          <a href={a.mainPicSrc} data-gallery="portfolioGallery" className="portfolio-lightbox">
-            <div className="work-img">
-              <img src={T[id].mainPicSrc} alt="" className="img-fluid" />
-            </div>
-          </a>
-          <a href={a.href}> 
+          <div className="work-img">
+            <a href={T[id].mainPicSrc} data-gallery="portfolioGallery" className="portfolio-lightbox">
+              <img src={T[id].mainPicSrc} alt="" className="img-fluid work-box" />
+            </a>
+          </div>
+          <a href={a.href}>
             <div className="work-content" key={a.href}>
               <div className="row">
                 <div className="col-sm-8">
@@ -39,7 +40,7 @@ export const ArticlesCardListView = ({ ...props }) => {
                 </div>
                 <div className="col-sm-4">
                   <div className="w-like">
-                    <span className="bi bi-plus-circle"></span>
+                    <span className="bi bi-box-arrow-up-right"></span>
                   </div>
                 </div>
               </div>
