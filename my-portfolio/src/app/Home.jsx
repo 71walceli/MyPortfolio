@@ -30,14 +30,6 @@ export default function Home() {
       typed.destroy()
     }
   }, [ready, T.typed])
-
-  // TODO Export to CSS, Tailwindo or styled components
-  const progressBarLabelStyle = {
-    textShadow: 
-      "-3px -3px 3px black, -3px 3px 3px black, 3px 3px 3px black, 3px -3px 3px black"
-    ,
-  }
-  
   
   return <>
     <BaseLayout>
@@ -156,39 +148,26 @@ export default function Home() {
                 </div>
                 <div className="skill-mf">
                   <p className="title-s">{T.skills}</p>
-                  <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={70} 
-                    className="py-2" customLabel="React"
-                  />
-                  <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={50} 
-                    className="py-2" customLabel="React Native"
-                  />
-                  <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={40} 
-                    className="py-2" customLabel="PHP & Apache"
-                  />
-                  <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={80} 
-                    className="py-2" customLabel="Node & Express"
-                  />
-                  <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={90} 
-                    className="py-2" customLabel="Linux"
-                  />
-                  <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={66} 
-                    className="py-2" customLabel="Docker"
-                  />
-                  <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={75} 
-                    className="py-2" customLabel="MariaDB & SQL Server"
-                  />
-                  <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={55} 
-                    className="py-2" customLabel="Jupyter"
-                  />
-                  <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={70} 
-                    className="py-2" customLabel="Cloud"
-                  />
-                  <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={40} 
-                    className="py-2" customLabel="Data Analytics"
-                  />
-                  <RaimbowColorBar customLabelStyles={progressBarLabelStyle} percentage={35}
-                    className="py-2" customLabel="Machine Learning"
-                  />
+                  {
+                    [
+                      {percentage: 90, leftText: "Linux"},
+                      {percentage: 70, leftText: "React"},
+                      {percentage: 50, leftText: "React Native"},
+                      {percentage: 80, leftText: "Node & Express"},
+                      {percentage: 66, leftText: "Docker"},
+                      {percentage: 75, leftText: "MariaDB/MySQL"},
+                      {percentage: 55, leftText: "Jupyter"},
+                      {percentage: 70, leftText: "Cloud"},
+                      {percentage: 40, leftText: "PHP"},
+                      {percentage: 40, leftText: "Data Analytics"},
+                      {percentage: 35, leftText: "Machine Learning"},
+                    ]
+                    .map(s => <>
+                      <RaimbowColorBar key={s.leftText} className="col-md-8 pb-1 py-md-2 my-auto" percentage={s.percentage} 
+                        toLeft={<div className="col-md-4 pt-1 py-md-2">{s.leftText}</div>}
+                      />
+                    </>)
+                  }
                 </div>
               </div>
               <div className="col-md-6">  

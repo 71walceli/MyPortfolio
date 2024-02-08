@@ -1,5 +1,7 @@
 import ProgressBar from "@ramonak/react-progress-bar";
 import chroma from "chroma-js"
+import { CSSProperties, ReactNode } from "react";
+import styled from "styled-components"
 
 
 export interface GradientSpec {
@@ -9,17 +11,17 @@ export interface GradientSpec {
 export interface GradientProgressBarProps {
   percentage: number,
   colors: GradientSpec[],
+  toLeft?: ReactNode,
+  toRight?: ReactNode,
+  customLabelStyles?: CSSProperties,
 }
-export const GradientProgressBar = ({percentage, colors, ...props}: GradientProgressBarProps) => {
-  // Function to get the color at a specific percentage
+export const GradientProgressBar = ({percentage, colors, toLeft, toRight, ...props}: GradientProgressBarProps) => {
   function getColorAtPercentage(percentage: number) {
     const gradient = chroma.scale(colors.map(stop => stop.color)).domain(colors.map(stop => stop.pos));
     return gradient(percentage).hex();
   }
 
-  // Example usage
   const color = getColorAtPercentage(percentage);
-  //console.log(color); // Should output the hex color for 25%
 
   return <>
     <ProgressBar completed={percentage} bgColor={color} {...props} />
@@ -28,8 +30,10 @@ export const GradientProgressBar = ({percentage, colors, ...props}: GradientProg
 
 export interface RaimbowColorBarProps {
   percentage: number,
+  toLeft?: ReactNode,
+  toRight?: ReactNode,
 }
-export const RaimbowColorBar = ({percentage, ...props}: RaimbowColorBarProps) => {
+export const RaimbowColorBar = ({percentage, toLeft, toRight, ...props}: RaimbowColorBarProps) => {
   // Define your gradient stops
   const colors: GradientSpec[] = [
     { pos: 0, color: 'red' },
@@ -39,6 +43,17 @@ export const RaimbowColorBar = ({percentage, ...props}: RaimbowColorBarProps) =>
   ];
 
   return <>
-    <GradientProgressBar percentage={percentage} colors={colors} {...props} />
+    <div className="row">
+      {toLeft}
+      <GradientProgressBar percentage={percentage} colors={colors} 
+        customLabelStyles={{
+          textShadow: 
+          "-3px -3px 3px black, -3px 3px 3px black, 3px 3px 3px black, 3px -3px 3px black"
+          ,
+        }}
+        {...props} 
+      />
+      {toRight}
+    </div>
   </>;
 }
