@@ -5,18 +5,21 @@ import reportWebVitals from './reportWebVitals';
 import { TranslateProvider } from './translations';
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import 'flag-icons/css/flag-icons.min.css';
+import { ReadyProvider } from "./data/contexts/ReadyContext"
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <TranslateProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route exact path='/' element={<Home />} />
-        </Routes>
-      </BrowserRouter>
-    </TranslateProvider>
+    <ReadyProvider>
+      <TranslateProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route exact path='/' element={<Home />} />
+          </Routes>
+        </BrowserRouter>
+      </TranslateProvider>
+    </ReadyProvider>
   </React.StrictMode>
 );
 
