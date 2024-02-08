@@ -1,6 +1,8 @@
 import { TranslateContext, useTranslations } from "../translations"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import { translations } from "../translations/articles"
+import { ReadyContext } from "../data/contexts/ReadyContext"
+import GLightbox from "glightbox"
 
 
 export const articles = {
@@ -15,6 +17,16 @@ export const articles = {
 }
 
 export const ArticlesCardListView = ({ ...props }) => {
+  const {ready} = useContext(ReadyContext)
+
+  useEffect(() => {
+    if (!ready) return;
+    const glightbox = GLightbox({
+      selector: '.portfolio-lightbox'
+    });
+    return () => glightbox.destroy()
+  }, [ready])
+
   const { language } = useContext(TranslateContext)
   const { T } = useTranslations(translations)
 

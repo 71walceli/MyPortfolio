@@ -1,5 +1,10 @@
 
 export default {
+	LanguageName: {
+		en: "English",
+		es: "Español",
+	},
+
 	// Hero section
 	iAm: {
 		en: <>I Am</>,
