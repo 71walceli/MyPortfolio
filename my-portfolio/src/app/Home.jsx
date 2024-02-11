@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 
 import Typed from "typed.js"  // For aototyping string
 
@@ -9,13 +9,21 @@ import translations from "../translations/page"
 import { ArticlesCardListView } from "../articles"
 import { useReady } from "../data/hooks/useReady"
 import { BaseLayout } from "../components/BaseLayout"
+import { useFormController } from "../data/controllers/useFormController"
+
+import { GenericInput } from "../components/Form"
+
+import { SchemaModel, StringType, DateType, NumberType, ObjectType, ArrayType } from 'schema-typed';
+
+import axios, {isCancel, AxiosError} from 'axios';
+
+import ReCAPTCHA from "react-google-recaptcha";
 
 
 export default function Home() {
   const {T} = useTranslations(translations)
   const {ready} = useReady()
 
-  
   useEffect(() => { // Typed text
     if (!ready) return;
     const typed = new Typed('#typed', {
@@ -31,10 +39,35 @@ export default function Home() {
     }
   }, [ready, T.typed])
   
+  const {
+    data: contactForm, 
+    set: setContactForm, 
+    isValid: isContactFormValid,
+    errors: contactFormError,
+  } =  useFormController(
+    {
+      name: "",
+      email: "",
+      subject: "",
+      message: "",
+    },
+    SchemaModel ({
+      name: StringType().isRequired(),
+      email: StringType().isEmail().isRequired(),
+      subject: StringType().isRequired(),
+      message: StringType().isRequired(),
+      googleRecaptchaToken: StringType().isRequired(),
+    }),
+  )
+  useEffect(() => console.log({ contactForm }), [contactForm])
+  const contactForm_recaptcha = useRef()
+
   return <>
     <BaseLayout>
       {/* ======= Hero Section ======= */}
-      <div id="hero" className="hero route bg-image" style={{backgroundImage: "url(assets/img/hero-bg.jpg)"}}>
+      <div id="hero" className="hero route bg-image" style={{
+        backgroundImage: "url(assets/img/hero-bg.jpg)"
+      }}>
         <div className="overlay-itro"></div>
         <div className="hero-content display-table">
           <div className="table-cell">
@@ -201,34 +234,56 @@ export default function Home() {
                           </h5>
                         </div>
                         <div>
-                          <form action="forms/contact.php" method="post" role="form" className="php-email-form">
+                          <form action="forms/contact.php" method="post" role="form" 
+                            className="php-email-form"
+                          >
                             <div className="row">
                               <div className="col-md-12 mb-3">
                                 <div className="form-group">
-                                  <input type="text" name="name" className="form-control" id="name" 
+                                  <GenericInput type="text" name="name" className="form-control" id="name" 
                                     placeholder={T.contactForm.YourName} required 
+                                    value={contactForm.name}
+                                    onChange={v => setContactForm(p => ({...p, name: v}))}
+                                    error={contactFormError.name}
                                   />
                                 </div>
                               </div>
                               <div className="col-md-12 mb-3">
                                 <div className="form-group">
-                                  <input type="email" className="form-control" name="email" id="email" 
+                                  <GenericInput type="email" className="form-control" name="email" id="email" 
                                     placeholder={T.contactForm.YourEmail} required 
+                                    value={contactForm.email}
+                                    onChange={v => setContactForm(p => ({...p, email: v}))}
+                                    error={contactFormError.email}
                                   />
                                 </div>
                               </div>
                               <div className="col-md-12 mb-3">
                                 <div className="form-group">
-                                  <input type="text" className="form-control" name="subject" 
+                                  <GenericInput type="text" className="form-control" name="subject" 
                                     id="subject" placeholder={T.contactForm.Subject} required 
+                                    value={contactForm.subject}
+                                    onChange={v => setContactForm(p => ({...p, subject: v}))}
+                                    error={contactFormError.subject}
                                   />
                                 </div>
                               </div>
                               <div className="col-md-12">
                                 <div className="form-group">
-                                  <textarea className="form-control" name="message" rows={5} 
+                                  <GenericInput className="form-control" name="message" rows={5} 
                                     placeholder={T.contactForm.Message} required
-                                  ></textarea>
+                                    value={contactForm.message}
+                                    onChange={v => setContactForm(p => ({...p, message: v}))}
+                                    error={contactFormError.message}
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-12">
+                                <div className="form-group">
+                                  <ReCAPTCHA ref={contactForm_recaptcha}
+                                    sitekey={process.env.REACT_APP_GOOGLE_RECAPTCHA_SIKE_KEY}
+                                    onChange={v => setContactForm(p => ({...p, googleRecaptchaToken: v}))}
+                                  />,
                                 </div>
                               </div>
                               <div className="col-md-12 text-center my-3">
@@ -237,7 +292,26 @@ export default function Home() {
                                 <div className="sent-message">{T.contactForm.Success}</div>
                               </div>
                               <div className="col-md-12 text-center">
-                                <button type="submit" className="button button-a button-big button-rouded">{T.contactForm.Submit}</button>
+                                <button type="submit" 
+                                  className="button button-a button-big button-rouded"
+                                  onClick={(e) => {
+                                    e.preventDefault()
+                                    e.stopPropagation()
+                                    axios.create({ 
+                                      baseURL: process.env.REACT_APP_API_URL
+                                    })
+                                      .post("ContactForm", contactForm)
+                                      .then(() => {
+                                        console.log("Form sent")
+                                        contactForm_recaptcha.current?.reset()
+                                      })
+                                      .catch(console.error)
+                                      // TODO Update styles according to state
+                                  }}
+                                  disabled={!isContactFormValid}
+                                >
+                                  {T.contactForm.Submit}
+                                </button>
                               </div>
                             </div>
                           </form>
