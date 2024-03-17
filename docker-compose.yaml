@@ -1,0 +1,49 @@
+version: "3"
+services:
+  web-dev:
+  # Dev
+    entrypoint: yarn start
+    env_file: 
+      - ./my-portfolio/.env.dev
+    hostname: dev.portfolio.71walceli.internal
+    image: node:20
+    user: "1000:1000"
+    volumes:
+      - ./my-portfolio:/App
+    working_dir: /App
+  api-dev: 
+    entrypoint: yarn start
+    env_file: 
+      - ./api/.env.dev
+    hostname: api.nextjs-server.my-portfolio
+    image: node:20
+    user: "1000:1000"
+    volumes:
+      - ./api:/App
+    working_dir: /App
+  
+  web:
+    build: ./my-portfolio
+    env_file: 
+      - ./my-portfolio/.env.production
+    environment: 
+      REACT_APP_API_URL: https://api.71walceli.beauty/MyPortfolio
+      REACT_APP_GOOGLE_RECAPTCHA_SIKE_KEY: 6LfzqWwpAAAAAFP8-Njl3FNSjyimGKxBzHt3XqiI
+    hostname: portfolio.71walceli.internal
+    networks:
+      - https-proxy
+    user: "1000:1000"
+    restart: unless-stopped
+    working_dir: /App
+  api: 
+    build: ./api
+    env_file: 
+      - ./api/.env.production
+    hostname: api.71walceli.internal
+    networks:
+      - https-proxy
+    restart: unless-stopped
+    user: "1000:1000"
+
+networks:
+  https-proxy:

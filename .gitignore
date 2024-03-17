@@ -26,5 +26,7 @@ yarn-error.log*
 Templates
 *.zip
 .gitsecret/keys/random_seed
-!*.secret
-docker-compose.yaml
+
+.env.*
+.env
+!**.secret

@@ -15,4 +15,4 @@ COPY ./ ./
 
 USER node
 EXPOSE 80
-ENTRYPOINT [ "yarn", "start" ]
+ENTRYPOINT [ "node", "index.js" ]
