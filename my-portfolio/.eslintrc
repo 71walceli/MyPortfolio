@@ -4,8 +4,9 @@
     "react-app/jest"
   ],
   "rules": {
-    "no-unused-expressions": "warn"
+    "no-unused-expressions": "warn",
+    "@typescript-eslint/no-unused-expressions": "warn"
   },
-  "parser": "@babel/eslint-parser"
+  "parser": "@typescript-eslint/parser"
 }
 

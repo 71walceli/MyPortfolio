@@ -3,6 +3,7 @@ import { useReady } from "../data/hooks/useReady"
 import { useTranslations } from "../translations"
 import translations from "../translations/page"
 import { select, onscroll, on } from "../functions"
+import $ from "jquery"
 
 
 const Header = () => {
