@@ -14,7 +14,9 @@ RUN yarn install --production
 COPY ./ ./
 
 RUN yarn build
+RUN ls -A | grep -v build | tr "\n" "\0" | xargs -0 rm -fr 
+RUN mv build/* .
 
 USER node
 EXPOSE 80
-ENTRYPOINT ["npx", "serve", "-s", "build"]
+ENTRYPOINT ["npx", "serve", "-s", ".", "-l", "80"]
